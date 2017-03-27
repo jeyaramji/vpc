@@ -1,0 +1,9 @@
+---
+- hosts: local
+  vars_prompt:
+    - name: "vpc_name"
+      prompt: "vpc_name?"
+      private: no
+
+  roles:
+    - vpc
