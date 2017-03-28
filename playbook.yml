@@ -8,3 +8,11 @@
   roles:
     - vpc
     - ec2_launch
+
+-   name: EC2 | Update all packages
+    hosts: ec2_hosts
+    become: yes
+    become_user: root
+    remote_user: ec2-user
+    roles:
+        - ec2_post_build
