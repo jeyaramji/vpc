@@ -1,6 +1,6 @@
 ---
 
-- name:               Create VPC
+- name: VPC | Create VPC
   ec2_vpc_net:
     name:             "{{ vpc_name }}"
     cidr_block:       "{{ vpc_cidr_block }}"
@@ -10,12 +10,12 @@
     state:            "present"
   register: my_vpc
 
-- name:               Set VPC ID in variable
+- name: VPC | Set VPC ID in variable
   set_fact:
     vpc_id:           "{{ my_vpc.vpc.id }}"
 
 
-- name:               Create Public Subnet [AZ-1]
+- name: SUBNET | Create Public Subnet [AZ-1]
   ec2_vpc_subnet:
     state:            "present"
     vpc_id:           "{{ vpc_id }}"
@@ -28,11 +28,11 @@
       Name:           "{{ vpc_name }}-Public_subnet-{{ aws_region }}b"
   register: my_public_subnet_az1
 
-- name:               Set Public Subnet ID in variable [AZ-1]
+- name: SUBNET | Set Public Subnet ID in variable [AZ-1]
   set_fact:
     public_subnet_az1_id: "{{ my_public_subnet_az1.subnet.id }}"
 
-- name:               Create Private Subnet [AZ-1]
+- name: SUBNET | Create Private Subnet [AZ-1]
   ec2_vpc_subnet:
     state:            "present"
     vpc_id:           "{{ vpc_id }}"
@@ -45,11 +45,11 @@
       Name:           "{{ vpc_name }}-Private_subnet-{{ aws_region }}b"
   register: my_private_subnet_az1
 
-- name:               Set Private Subnet ID in variable [AZ-1]
+- name: SUBNET | Set Private Subnet ID in variable [AZ-1]
   set_fact:
     private_subnet_az1_id: "{{ my_private_subnet_az1.subnet.id }}"
 
-- name:               Create Public Subnet [AZ-2]
+- name: SUBNET | Create Public Subnet [AZ-2]
   ec2_vpc_subnet:
     state:            "present"
     vpc_id:           "{{ vpc_id }}"
@@ -62,11 +62,11 @@
       Name:           "{{ vpc_name }}-Public_subnet-{{ aws_region }}c"
   register: my_public_subnet_az2
 
-- name:               Set Public Subnet ID in variable [AZ-2]
+- name: SUBNET | Set Public Subnet ID in variable [AZ-2]
   set_fact:
     public_subnet_az2_id: "{{ my_public_subnet_az2.subnet.id }}"
 
-- name:               Create Private Subnet [AZ-2]
+- name: SUBNET | Create Private Subnet [AZ-2]
   ec2_vpc_subnet:
     state:            "present"
     vpc_id:           "{{ vpc_id }}"
@@ -79,12 +79,12 @@
       Name:           "{{ vpc_name }}-Private_subnet-{{ aws_region }}c"
   register: my_private_subnet_az2
 
-- name:               Set Private Subnet ID in variable [AZ-2]
+- name: SUBNET | Set Private Subnet ID in variable [AZ-2]
   set_fact:
     private_subnet_az2_id: "{{ my_private_subnet_az2.subnet.id }}"
 
 
-- name:               Create Internet Gateway for VPC
+- name: IGW |  Create Internet Gateway for VPC
   ec2_vpc_igw:
     vpc_id:           "{{ vpc_id }}"
     region:           "{{ aws_region }}"
@@ -98,7 +98,7 @@
     igw_id:           "{{ my_vpc_igw.gateway_id }}"
 
 
-- name: Create NAT Gateway [AZ-1]
+- name: NGW | Create NAT Gateway [AZ-1]
   ec2_vpc_nat_gateway:
     state: present
     subnet_id: "{{ public_subnet_az1_id }}"
@@ -107,11 +107,11 @@
     if_exist_do_not_create: true
   register: my_nat_gateway_z1
 
-- name: Set Nat Gateway ID in variable [AZ-1]
+- name: NGW | Set Nat Gateway ID in variable [AZ-1]
   set_fact:
     nat_gateway_az1_id: "{{ my_nat_gateway_z1.nat_gateway_id }}"
 
-- name: Create NAT Gateway [AZ-2]
+- name: NGW | Create NAT Gateway [AZ-2]
   ec2_vpc_nat_gateway:
     state: present
     subnet_id: "{{ public_subnet_az2_id }}"
@@ -120,11 +120,11 @@
     if_exist_do_not_create: true
   register: my_nat_gateway_z2
 
-- name: Set Nat Gateway ID in variable [AZ-2]
+- name: NGW | Set Nat Gateway ID in variable [AZ-2]
   set_fact:
     nat_gateway_az2_id: "{{ my_nat_gateway_z2.nat_gateway_id }}"
 
-- name: Set up public subnet route table
+- name: ROUTE-TABLE | Set up public subnet route table
   ec2_vpc_route_table:
     vpc_id: "{{ vpc_id }}"
     region: "{{ aws_region }}"
@@ -139,7 +139,7 @@
       - dest: "0.0.0.0/0"
         gateway_id: "{{ igw_id }}"
 
-- name: Set up private subnet route table [AZ-1]
+- name: ROUTE-TABLE | Set up private subnet route table [AZ-1]
   ec2_vpc_route_table:
     vpc_id: "{{ vpc_id }}"
     region: "{{ aws_region }}"
@@ -153,7 +153,7 @@
       - dest: "0.0.0.0/0"
         gateway_id: "{{ nat_gateway_az1_id }}"
 
-- name: Set up private subnet route table [AZ-2]
+- name: ROUTE-TABLE | Set up private subnet route table [AZ-2]
   ec2_vpc_route_table:
     vpc_id: "{{ vpc_id }}"
     region: "{{ aws_region }}"
@@ -168,7 +168,7 @@
         gateway_id: "{{ nat_gateway_az2_id }}"
 
 
-- name: Create Main Security Group
+- name: SG | Create Main Security Group
   ec2_group:
     name: "{{ vpc_name }}-External SSH Access"
     description: "External SSH Access"
@@ -183,11 +183,11 @@
         cidr_ip: "{{ my_ip }}"
   register: my_main_sg
 
-- name: Set Main SG ID
+- name: SG | Set Main SG ID
   set_fact:
     main_sg_id: "{{ my_main_sg.group_id }}"
 
-- name: Create Private Security Group
+- name: SG | Create Private Security Group
   ec2_group:
     name: "{{ vpc_name }}-Private Instances SG"
     description: "Private Instances SG"

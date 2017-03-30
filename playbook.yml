@@ -9,7 +9,7 @@
     - vpc
     - ec2_launch
 
--   name: EC2 | Update all packages
+-   name: EC2 | Update Listed packages only
     hosts: ec2_hosts
     become: yes
     become_user: root
