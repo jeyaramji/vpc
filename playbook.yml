@@ -1,5 +1,5 @@
 ---
-- hosts: tag_env_staging
+- hosts: local
   vars_prompt:
     - name: "vpc_name"
       prompt: "vpc_name?"
@@ -15,7 +15,7 @@
     - ec2_launch
 
 -   name: EC2 | Update Listed packages only
-    hosts: tag_env_staging
+    hosts: ec2_hosts
     become: yes
     become_user: root
     remote_user: ec2-user
