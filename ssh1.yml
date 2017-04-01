@@ -1,30 +1,10 @@
-  - name: RPM | Copying the rpm list to remote host
-    copy:
-       src: ./files/rpm_to_update
-       dest: /tmp/rpm_to_update
-       owner: root
-       group: root
-       mode: 0644
-
-  - name: RPM | Get the rpm list from file
-    command: cat /tmp/rpm_to_update
-    register: my_items
-
-  - name: RPM | Installing rpms
-    yum: name="{{item}}" state=latest
-    with_items: "{{ my_items.stdout_lines }}"
-
-  - name: AWSCLI | Executing files/rhel5_python27_awscli_install.sh
-    script: files/rhel5_python27_awscli_install.sh
-    args:
-      creates: /usr/local/python27/bin/aws
-
-  - name: CUPS | restart cups  enable autostart at reboot
-    service:
-      name: cups
-      state: restarted
-      enabled: yes
-
+- hosts: tag_env_staging
+  remote_user: ec2-user
+  become_user: root
+  become: yes
+  vars_files:
+    - /root/vpc02/vars_files/user.yml
+  tasks:
   - name: USERADD | create user
     user:
       name: "{{ item.name }}"
@@ -59,7 +39,7 @@
     when: item.state == 'present'
     with_items: "{{ ssh_users }}"
 
-  - name: USERADD | Set Permission 0600 for PEM locally - Private Key
+  - name: USERADD | Set Permission 0600 for PEM locally - Private Key 
     local_action: file mode=0600 path="keys/private/{{ item.name }}.pem"
     with_items: "{{ ssh_users }}"
     when: item.state == 'present'
@@ -74,5 +54,3 @@
     when: item.state == 'absent'
     with_items: "{{ ssh_users }}"
 
-#- name: EC2 | upgrade all packages
-#  yum: name=* state=latest update_cache=yes

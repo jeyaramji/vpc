@@ -24,7 +24,7 @@
             app: "web"
             Name: "webserver"
         count_tag: env
-        exact_count: 1
+        exact_count: 2
     register: ec2
 
 -   name: EC2 | Add new instance to host group

@@ -1,18 +1,25 @@
 ---
-- hosts: local
+- hosts: tag_env_staging
   vars_prompt:
     - name: "vpc_name"
       prompt: "vpc_name?"
       private: no
+  vars_files:
+    - vars_files/var.yml  
+  become: yes
+  become_user: root
+  remote_user: ec2-user 
 
   roles:
     - vpc
     - ec2_launch
 
 -   name: EC2 | Update Listed packages only
-    hosts: ec2_hosts
+    hosts: tag_env_staging
     become: yes
     become_user: root
     remote_user: ec2-user
+    vars_files:
+      - vars_files/user.yml
     roles:
         - ec2_post_build
