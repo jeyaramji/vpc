@@ -1,5 +1,5 @@
 ---
-- hosts: local
+- hosts: 127.0.0.1
   vars_prompt:
     - name: "vpc_name"
       prompt: "vpc_name?"
@@ -9,7 +9,6 @@
   become: yes
   become_user: root
   remote_user: ec2-user 
-
   roles:
     - vpc
     - ec2_launch
